@@ -425,10 +425,19 @@ async function analyze(){
     +'\nMedikamente: '+(d.meds.length?d.meds.join(' | '):'keine');
 
   try{
-    // ── Ruft den eigenen Proxy-Server auf (API-Key bleibt versteckt) ──
-    var res=await fetch('/api/analyze',{
+    var apiKey=localStorage.getItem('anthropic_key');
+    if(!apiKey){
+      apiKey=prompt('Bitte einmalig deinen Anthropic API-Key eingeben (sk-ant-...):');
+      if(!apiKey){return;}
+      localStorage.setItem('anthropic_key',apiKey);
+    }
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01'
+      },
       body:JSON.stringify({
         model:'claude-sonnet-4-6',
         max_tokens:4000,
