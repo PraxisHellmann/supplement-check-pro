@@ -233,14 +233,7 @@ footer{text-align:center;padding:.9rem;font-size:.68rem;color:var(--muted);}
       <div class="lead-box"><div class="lead-lbl">Kontakt</div><div id="lead-info"></div></div>
       <div class="disclaimer">⚠️ Diese Analyse ersetzt keine individuelle Beratung durch Arzt, Heilpraktiker oder Apotheker. Bei Fragen: Katrin Hellmann – Heilpraktikerin.</div>
     </div>
-    <div class="ss-setup" id="ss-setup" style="display:none;">
-      <strong>⚙️ Google Sheets Anbindung</strong>
-      Füge deine Apps Script Web-App URL ein (einmalig):
-      <div class="ss-row">
-        <input type="text" id="ss-url" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;font-family:DM Sans,sans-serif;font-size:.78rem;border:1.5px solid #cce8e5;border-radius:7px;padding:.38rem .5rem;outline:none;background:#f5faf9;color:#1a2e2d;">
-        <button onclick="saveUrl()" style="background:#2a9d8f;color:#fff;border:none;border-radius:7px;padding:.38rem .75rem;font-size:.76rem;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;white-space:nowrap;">Speichern</button>
-      </div>
-    </div>
+
   </div>
   <div class="nav-row" style="margin-top:.65rem;">
     <button class="btn-back" onclick="go(3)">← Zurück</button>
@@ -518,14 +511,15 @@ function saveUrl(){
   document.getElementById('ss-msg').textContent='URL gespeichert ✅';
   document.getElementById('ss-msg').className='ss-msg ok';
 }
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxM0Sv-Xc0-acBTy_qWCjU8O2bUk_Vh333xayGIyMLFv9D17E0P25wPSdfIYiFUo_Tj/exec';
+
 async function sendSheets(){
-  var url=localStorage.getItem('ssUrl'); if(!url){document.getElementById('ss-setup').style.display='block';return;}
   if(!lastData) return;
   var d=lastData;
   document.getElementById('ss-msg').textContent='Wird übertragen …';
   document.getElementById('ss-msg').className='ss-msg';
   try{
-    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({firstname:d.fn,lastname:d.ln,phone:d.ph,age:d.age,height:d.ht,weight:d.wt,
         gender:d.gender,goals:d.goals,indication:d.ind,contra:d.contra,allergies:d.allerg,
         supps:d.supps.join('; '),meds:d.meds.join('; '),
@@ -536,14 +530,13 @@ async function sendSheets(){
     document.getElementById('ss-msg').textContent='✅ In Google Sheets gespeichert!';
     document.getElementById('ss-msg').className='ss-msg ok';
   }catch(e){
-    document.getElementById('ss-msg').textContent='Fehler – URL prüfen.';
+    document.getElementById('ss-msg').textContent='Fehler – bitte erneut versuchen.';
     document.getElementById('ss-msg').className='ss-msg err';
   }
 }
 
 // INIT
 addSupp(); addSupp(); addMed();
-var su=localStorage.getItem('ssUrl'); if(su) document.getElementById('ss-url').value=su;
 ['i-fn','i-ln','i-ph','i-age','i-ht','i-wt'].forEach(function(id){
   var el=document.getElementById(id);
   if(el) el.addEventListener('input',function(){markField(id,true);});
