@@ -437,8 +437,12 @@ async function analyze(){
       })
     });
     var resp=await res.json();
-    var block=resp.content&&resp.content.find(function(b){return b.type==='text';});
-    lastRaw=block?block.text:'';
+    var block=null;
+    if(resp.content&&Array.isArray(resp.content)){
+      block=resp.content.find(function(b){return b.type==='text';});
+    }
+    lastRaw=block&&block.text?block.text:'';
+    console.log('Antwort erhalten, Länge:',lastRaw.length);
     renderResult(lastRaw);
   }catch(e){
     document.getElementById('b0').innerHTML='<p style="color:#e76f51">Fehler. Bitte erneut versuchen.</p>';
