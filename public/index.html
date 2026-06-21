@@ -437,12 +437,16 @@ async function analyze(){
       })
     });
     var resp=await res.json();
-    var block=null;
-    if(resp.content&&Array.isArray(resp.content)){
-      block=resp.content.find(function(b){return b.type==='text';});
+    lastRaw='';
+    if(resp && resp.content && Array.isArray(resp.content)){
+      for(var i=0;i<resp.content.length;i++){
+        if(resp.content[i].type==='text'){
+          lastRaw=resp.content[i].text;
+          break;
+        }
+      }
     }
-    lastRaw=block&&block.text?block.text:'';
-    console.log('Antwort erhalten, Länge:',lastRaw.length);
+    if(!lastRaw){throw new Error('Keine Antwort erhalten');}
     renderResult(lastRaw);
   }catch(e){
     document.getElementById('b0').innerHTML='<p style="color:#e76f51">Fehler. Bitte erneut versuchen.</p>';
